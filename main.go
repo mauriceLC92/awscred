@@ -22,6 +22,14 @@ func main() {
 	}
 	defer file.Close()
 
+	commandLineArg := os.Args[1]
+	fmt.Printf("commandLineArg: %v\n", commandLineArg)
+
+	credentials := getCredentials(file)
+	printCredentials(credentials)
+}
+
+func getCredentials(file *os.File) []credential {
 	scanner := bufio.NewScanner(file)
 	currentProfile := credential{}
 
@@ -51,9 +59,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error reading from credentials file", err)
 	}
 
+	return credentials
+}
+
+func printCredentials(credentials []credential) {
 	for _, cred := range credentials {
 		fmt.Println("Profile - ", cred.profileName)
 		fmt.Println("Access Key ID - ", cred.accessKeyId)
 		fmt.Println("Secret Access Key - ", cred.accesskey)
+		fmt.Println("--------------------------------------------------------------")
 	}
 }
