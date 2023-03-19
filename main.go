@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/mauriceLC92/go-awscred/aws"
 )
 
 type credential struct {
@@ -21,12 +23,32 @@ func main() {
 		return
 	}
 	defer file.Close()
-
-	commandLineArg := os.Args[1]
-	fmt.Printf("commandLineArg: %v\n", commandLineArg)
-
 	credentials := getCredentials(file)
-	printCredentials(credentials)
+
+	if len(os.Args) > 1 {
+		commandLineArg := os.Args[1]
+		fmt.Printf("commandLineArg: %v\n", commandLineArg)
+
+		switch strings.ToLower(commandLineArg) {
+		case "print":
+			printCredentials(credentials)
+		case "check":
+			aws.CheckDefaultProfile()
+			for _, cred := range credentials[1:] {
+				aws.CheckGivenProfile(cred.profileName)
+			}
+		case "apply":
+			fmt.Println("applying profile...")
+		case "clean":
+			fmt.Println("cleaning AWS profiles")
+		case "help":
+			fmt.Println("Displays a friendly message of the options available.")
+		default:
+			fmt.Println("Command not recognised. Please use 'help' to see the commands available to you.")
+		}
+	} else {
+		fmt.Println("no commands given")
+	}
 }
 
 func getCredentials(file *os.File) []credential {
