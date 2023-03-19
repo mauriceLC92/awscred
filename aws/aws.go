@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/aws/smithy-go"
+	"github.com/mauriceLC92/go-awscred/credentials"
 )
 
 func CheckDefaultProfile() {
@@ -68,5 +69,13 @@ func logError(err error, profileName string) {
 			// The error is not related to the credentials
 			fmt.Printf("An unexpected error occurred: %v", err)
 		}
+	}
+}
+
+func CheckCredentials(credentials []credentials.Credential) {
+	CheckDefaultProfile()
+	// check all beyond the default
+	for _, cred := range credentials[1:] {
+		CheckGivenProfile(cred.ProfileName)
 	}
 }
