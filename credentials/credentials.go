@@ -13,7 +13,22 @@ type Credential struct {
 	Accesskey   string
 }
 
-func GetCredentials(file *os.File) []Credential {
+func PrintCredentials(credentials []Credential) {
+	for _, cred := range credentials {
+		fmt.Println("Profile - ", cred.ProfileName)
+		fmt.Println("Access Key ID - ", cred.AccessKeyId)
+		fmt.Println("Secret Access Key - ", cred.Accesskey)
+		fmt.Println("--------------------------------------------------------------")
+	}
+}
+
+func Parse(filePath string) ([]Credential, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
 	currentProfile := Credential{}
 
@@ -37,20 +52,12 @@ func GetCredentials(file *os.File) []Credential {
 			currentProfile = Credential{}
 			continue
 		}
+
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "error reading from credentials file", err)
+		return nil, err
 	}
 
-	return credentials
-}
-
-func PrintCredentials(credentials []Credential) {
-	for _, cred := range credentials {
-		fmt.Println("Profile - ", cred.ProfileName)
-		fmt.Println("Access Key ID - ", cred.AccessKeyId)
-		fmt.Println("Secret Access Key - ", cred.Accesskey)
-		fmt.Println("--------------------------------------------------------------")
-	}
+	return credentials, nil
 }

@@ -11,13 +11,10 @@ import (
 )
 
 func main() {
-	file, err := os.Open(os.ExpandEnv("$HOME/.aws/credentials"))
+	creds, err := credentials.Parse(os.ExpandEnv("$HOME/.aws/credentials"))
 	if err != nil {
-		log.Fatalln("error opening credentials file:", err)
-		return
+		log.Fatalln("error parsing credentials file:", err)
 	}
-	defer file.Close()
-	creds := credentials.GetCredentials(file)
 
 	if len(os.Args) > 1 {
 		commandLineArg := os.Args[1]
@@ -41,3 +38,6 @@ func main() {
 		fmt.Println("no commands given")
 	}
 }
+
+// Goals for next session
+// Implement print, check and apply with a test first approach (have tests in place)

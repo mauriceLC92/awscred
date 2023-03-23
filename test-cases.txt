@@ -1,0 +1,8 @@
+Interesting behaviours of our program
+
+- Read your credentials
+    - validate that the file schema is what we expect
+        - what do we do in the event of failure
+    - 
+- Print your credentials
+- Checks credentials are valid
