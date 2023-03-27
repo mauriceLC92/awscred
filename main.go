@@ -38,6 +38,3 @@ func main() {
 		fmt.Println("no commands given")
 	}
 }
-
-// Goals for next session
-// Implement print, check and apply with a test first approach (have tests in place)

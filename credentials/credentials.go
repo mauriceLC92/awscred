@@ -3,6 +3,7 @@ package credentials
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -11,6 +12,15 @@ type Credential struct {
 	ProfileName string
 	AccessKeyId string
 	Accesskey   string
+}
+
+func PrintTo(w io.Writer, credentials []Credential) {
+	for _, cred := range credentials {
+		fmt.Fprintln(w, fmt.Sprint("Profile - ", cred.ProfileName))
+		fmt.Fprintln(w, fmt.Sprint("Access Key ID - ", cred.AccessKeyId))
+		fmt.Fprintln(w, fmt.Sprint("Secret Access Key - ", cred.Accesskey))
+		// fmt.Println("--------------------------------------------------------------")
+	}
 }
 
 func PrintCredentials(credentials []Credential) {
