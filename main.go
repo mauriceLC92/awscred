@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mauriceLC92/go-awscred/aws"
-	"github.com/mauriceLC92/go-awscred/credentials"
+	"github.com/mauriceLC92/awscred/aws"
+	"github.com/mauriceLC92/awscred/credentials"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 		switch strings.ToLower(commandLineArg) {
 		case "print":
-			credentials.PrintCredentials(creds)
+			credentials.PrintTo(os.Stdout, creds)
 		case "check":
 			aws.CheckCredentials(creds)
 		case "apply":

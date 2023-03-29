@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/aws/smithy-go"
-	"github.com/mauriceLC92/go-awscred/credentials"
+	"github.com/mauriceLC92/awscred/credentials"
 )
 
 func CheckDefaultProfile() {

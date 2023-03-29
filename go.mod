@@ -1,4 +1,4 @@
-module github.com/mauriceLC92/go-awscred
+module github.com/mauriceLC92/awscred
 
 go 1.20
 

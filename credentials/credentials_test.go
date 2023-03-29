@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/mauriceLC92/go-awscred/credentials"
+	"github.com/mauriceLC92/awscred/credentials"
 )
 
 // Parse reads a credentials file and returns a slice of Credentials.

@@ -19,15 +19,6 @@ func PrintTo(w io.Writer, credentials []Credential) {
 		fmt.Fprintln(w, fmt.Sprint("Profile - ", cred.ProfileName))
 		fmt.Fprintln(w, fmt.Sprint("Access Key ID - ", cred.AccessKeyId))
 		fmt.Fprintln(w, fmt.Sprint("Secret Access Key - ", cred.Accesskey))
-		// fmt.Println("--------------------------------------------------------------")
-	}
-}
-
-func PrintCredentials(credentials []Credential) {
-	for _, cred := range credentials {
-		fmt.Println("Profile - ", cred.ProfileName)
-		fmt.Println("Access Key ID - ", cred.AccessKeyId)
-		fmt.Println("Secret Access Key - ", cred.Accesskey)
 		fmt.Println("--------------------------------------------------------------")
 	}
 }
