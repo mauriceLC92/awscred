@@ -1,8 +1,7 @@
-# go-awscred
+# awscred
 
-## Goals
+## What is this
 
-- Output the AWS credentials available to you based on your `.aws/credentials` file
-- Allow you to "apply" the profile of your choice
-- When applying the profile, first check if the credentials have expired. If yes, choose to remove them.
-- Should run a function periodically which does a check against your credentials to see if they are still valid
+The `awscred` package is an easy to use CLI for checking what [AWS](https://aws.amazon.com/) are available in your `.aws/credentials` file and which of these credentials are valid. Once a check is done, you can easily apply a valid profile and clean up credentials which are no longer of use.
+
+## How to use

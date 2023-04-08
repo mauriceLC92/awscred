@@ -6,12 +6,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mauriceLC92/awscred/aws"
-	"github.com/mauriceLC92/awscred/credentials"
+	"github.com/mauriceLC92/awscred"
 )
 
 func main() {
-	creds, err := credentials.Parse(os.ExpandEnv("$HOME/.aws/credentials"))
+	creds, err := awscred.Parse(os.ExpandEnv("$HOME/.aws/credentials"))
 	if err != nil {
 		log.Fatalln("error parsing credentials file:", err)
 	}
@@ -22,11 +21,12 @@ func main() {
 
 		switch strings.ToLower(commandLineArg) {
 		case "print":
-			credentials.PrintTo(os.Stdout, creds)
+			awscred.PrintTo(os.Stdout, creds)
 		case "check":
-			aws.CheckCredentials(creds)
+			awscred.CheckCredentials(creds)
 		case "apply":
-			fmt.Println("applying profile...")
+			profileName := os.Args[2]
+			awscred.ApplyProfile(profileName)
 		case "clean":
 			fmt.Println("cleaning AWS profiles")
 		case "help":
