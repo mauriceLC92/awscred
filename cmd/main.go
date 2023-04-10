@@ -25,8 +25,9 @@ func main() {
 		case "check":
 			awscred.CheckCredentials(creds)
 		case "apply":
+			// TODO - come back to this entire flow
 			profileName := os.Args[2]
-			awscred.ApplyProfile(profileName)
+			awscred.GenerateProfileScript(profileName)
 		case "clean":
 			fmt.Println("cleaning AWS profiles")
 		case "help":

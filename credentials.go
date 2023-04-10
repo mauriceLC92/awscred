@@ -6,8 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -106,6 +109,47 @@ func ApplyProfile(profileName string) {
 	if err != nil {
 		logError(err, profileName)
 	}
+}
+
+// What I initially tried
+func Apply(filePath string) {
+	cmd := exec.Command("source", filePath)
+	err := cmd.Run()
+	if err != nil {
+		logError(err, filePath)
+	}
+}
+
+// This won't work either since this function will run within a child process
+func ApplyIt(filePath string) {
+	cmd := exec.Command("/bin/bash", "-c", fmt.Sprintf("source %s", filePath))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		logError(err, filePath)
+	}
+}
+
+// A Go program is unable to update the environment variable of the shell that invoked it. The Go program
+// is run in a child process of the shell. Child process cannot modify the environment of it's parent.
+// The below generates a script which can then be sourced by the user running that within the shell.
+
+func GenerateProfileScript(profileName string) {
+	script := fmt.Sprintf(`#!/bin/bash
+	export AWS_PROFILE=%s
+	`, profileName)
+
+	scriptFilePath := filepath.Join(os.TempDir(), "set_aws_profile.sh")
+	err := ioutil.WriteFile(scriptFilePath, []byte(script), 0755)
+	if err != nil {
+		log.Fatal("Error writing script file:", err)
+	}
+
+	fmt.Printf("Script created: %s\n", scriptFilePath)
+	fmt.Println("To update the environment variable, run:")
+	fmt.Printf("source %s\n", scriptFilePath)
+	ApplyIt(scriptFilePath)
 }
 
 func logSuccess(profileName string) {
