@@ -29,13 +29,13 @@ func main() {
 			profileName := os.Args[2]
 			awscred.GenerateProfileScript(profileName)
 		case "clean":
-			fmt.Println("cleaning AWS profiles")
+			log.Println("cleaning AWS profiles")
 		case "help":
-			fmt.Println("Displays a friendly message of the options available.")
+			log.Println("Displays a friendly message of the options available.")
 		default:
-			fmt.Println("Command not recognised. Please use 'help' to see the commands available to you.")
+			log.Println("Command not recognised. Please use 'help' to see the commands available to you.")
 		}
 	} else {
-		fmt.Println("no commands given")
+		log.Println("no commands given")
 	}
 }

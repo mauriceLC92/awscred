@@ -1,0 +1,12 @@
+[default]
+region = eu-west-2
+[profile serverless-admin-personal-acc]
+region = us-east-1
+[profile workshop-admin]
+region = us-east-1
+[profile temp-prod-admin]
+region = eu-west-2
+[profile hello]
+region = eu-west-2
+[profile there]
+region = eu-west-2

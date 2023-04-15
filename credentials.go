@@ -18,6 +18,11 @@ import (
 	"github.com/aws/smithy-go"
 )
 
+const (
+	AWS_CREDENTIALS = "$HOME/.aws/credentials"
+	AWS_CONFIG      = "$HOME/.aws/config"
+)
+
 type Credential struct {
 	ProfileName string
 	AccessKeyId string
@@ -95,6 +100,65 @@ func IsValidProfile(profileName string) {
 		return
 	}
 	logSuccess(profileName)
+}
+
+func skipCredentials(s *bufio.Scanner) {
+	s.Scan()
+	s.Scan()
+}
+
+func skipConfig(s *bufio.Scanner) {
+	s.Scan()
+}
+
+func DeleteCredentialByProfile(profileName string) {
+	// not sure how to know the FileMode for this?
+	file, err := os.OpenFile("testdata/invalid-credentials.txt", os.O_RDWR, 0777)
+	if err != nil {
+		log.Fatalln("error reading credentials file")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	newData := []byte{}
+	for scanner.Scan() {
+		if scanner.Text() == fmt.Sprintf("[%s]", profileName) {
+			// skip the next two lines after finding the profile names
+			skipCredentials(scanner)
+			continue
+		}
+		newData = append(newData, append(scanner.Bytes(), "\n"...)...)
+	}
+
+	err = os.WriteFile("testdata/new-invalid-credentials.txt", newData, 0777)
+	if err != nil {
+		log.Println("error writing new credentials file")
+	}
+}
+
+func DeleteConfigByProfile(profileName string) {
+	// not sure how to know the FileMode for this?
+	file, err := os.OpenFile("testdata/invalid-config.txt", os.O_RDWR, 0777)
+	if err != nil {
+		log.Fatalln("error reading config file")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	newData := []byte{}
+	for scanner.Scan() {
+		if scanner.Text() == fmt.Sprintf("[%s]", profileName) {
+			// skip the next two lines after finding the profile names
+			skipConfig(scanner)
+			continue
+		}
+		newData = append(newData, append(scanner.Bytes(), "\n"...)...)
+	}
+
+	err = os.WriteFile("testdata/new-invalid-config.txt", newData, 0777)
+	if err != nil {
+		log.Println("error writing new config file")
+	}
 }
 
 func CheckCredentials(credentials []Credential) {

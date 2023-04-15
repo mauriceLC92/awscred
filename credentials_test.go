@@ -58,3 +58,11 @@ func TestPrintToReadsASliceOfCredentialsAndPrintsToGivenWriter(t *testing.T) {
 func TestIsValidProfileValidOrNot(t *testing.T) {
 	// TODO - how does one test this?
 }
+
+// Delete Profile reads a credentials file and removes a profile if present
+// func TestCleanRemovesInvalidProfiles(t *testing.T) {
+// 	t.Parallel()
+
+// 	awscred.DeleteProfile("test-2")
+
+// }
