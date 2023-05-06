@@ -36,7 +36,7 @@ func TestParseReadsCredentialsFileAndReturnSliceOfCredentials(t *testing.T) {
 }
 
 // Print reads a slice of credentials and prints the output to the terminal
-func TestPrintToReadsASliceOfCredentialsAndPrintsToGivenWriter(t *testing.T) {
+func TestPrintTo_ReadsASliceOfCredentialsAndPrintsToGivenWriter(t *testing.T) {
 	t.Parallel()
 	buf := new(bytes.Buffer)
 	creds := []awscred.Credential{
@@ -54,15 +54,38 @@ func TestPrintToReadsASliceOfCredentialsAndPrintsToGivenWriter(t *testing.T) {
 	}
 }
 
-// IsValidProfile takes a profile name and checks if valid or not
-func TestIsValidProfileValidOrNot(t *testing.T) {
-	// TODO - how does one test this?
+// DeleteCredentialByProfile should error when given an invalid file path to credentials file
+func TestDeleteCredentialByProfile_ErrorsWhenGivenInvalidPathToCredentialsFile(t *testing.T) {
+	t.Parallel()
+
+	credentialsFile := "testdata/some-random-path.txt"
+	profileName := "something"
+	err := awscred.DeleteCredentialByProfile(profileName, credentialsFile)
+	if err == nil {
+		t.Errorf("expected file %s not to exist but instead it was found", credentialsFile)
+	}
 }
 
-// Delete Profile reads a credentials file and removes a profile if present
-// func TestCleanRemovesInvalidProfiles(t *testing.T) {
-// 	t.Parallel()
+// DeleteCredentialByProfile should delete a credential based on given profile name
+func TestDeleteCredentialByProfile_DeletesACredentialByProfileName(t *testing.T) {
+	t.Parallel()
 
-// 	awscred.DeleteProfile("test-2")
+	credentialsFile := "testdata/invalid-credentials.txt"
+	profileName := "something"
+	err := awscred.DeleteCredentialByProfile(profileName, credentialsFile)
+	if err == nil {
+		t.Errorf("expected file %s not to exist but instead it was found", credentialsFile)
+	}
+}
 
-// }
+// DeleteConfigByProfile should error when given an invalid file path to credentials file
+func TestDeleteConfigByProfile_ErrorsWhenGivenInvalidPathToConfigFile(t *testing.T) {
+	t.Parallel()
+
+	credentialsFile := "testdata/some-random-path.txt"
+	profileName := "something"
+	err := awscred.DeleteConfigByProfile(profileName, credentialsFile)
+	if err == nil {
+		t.Errorf("expected file %s not to exist but instead it was found", credentialsFile)
+	}
+}

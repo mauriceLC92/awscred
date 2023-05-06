@@ -10,32 +10,37 @@ import (
 )
 
 func main() {
-	creds, err := awscred.Parse(os.ExpandEnv("$HOME/.aws/credentials"))
-	if err != nil {
-		log.Fatalln("error parsing credentials file:", err)
-	}
-
 	if len(os.Args) > 1 {
 		commandLineArg := os.Args[1]
-		fmt.Printf("commandLineArg: %v\n", commandLineArg)
 
 		switch strings.ToLower(commandLineArg) {
 		case "print":
+			creds := getCreds()
 			awscred.PrintTo(os.Stdout, creds)
 		case "check":
+			creds := getCreds()
 			awscred.CheckCredentials(creds)
 		case "apply":
-			// TODO - come back to this entire flow
 			profileName := os.Args[2]
-			awscred.GenerateProfileScript(profileName)
+			commandName := os.Args[3:]
+			awscred.Apply(profileName, commandName)
 		case "clean":
-			log.Println("cleaning AWS profiles")
+			creds := getCreds()
+			awscred.Clean(creds)
 		case "help":
 			log.Println("Displays a friendly message of the options available.")
 		default:
-			log.Println("Command not recognised. Please use 'help' to see the commands available to you.")
+			fmt.Println("Command not recognised. Please use 'help' to see the commands available to you.")
 		}
 	} else {
 		log.Println("no commands given")
 	}
+}
+
+func getCreds() []awscred.Credential {
+	creds, err := awscred.Parse(os.ExpandEnv(awscred.AWS_CREDENTIALS))
+	if err != nil {
+		log.Fatalln("error parsing credentials file:", err)
+	}
+	return creds
 }

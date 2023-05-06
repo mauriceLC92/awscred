@@ -80,7 +80,11 @@ func Parse(filePath string) ([]Credential, error) {
 	return credentials, nil
 }
 
-func IsValidProfile(profileName string) {
+func IsValidProfile(profileName string) (err error) {
+	// When struggling to think what to test, break down the function
+	// into chunks of what the function is doing and what is essential to it performing it's function.
+	// Imagine what bugs there would be and then write tests to detect them.
+	// Example is if the svc is nil, we can't do anything with that!
 	cfg, err := config.LoadDefaultConfig(
 		context.Background(),
 		config.WithSharedConfigProfile(profileName),
@@ -96,10 +100,9 @@ func IsValidProfile(profileName string) {
 	// Call the "GetCallerIdentity" API to check if the credentials are valid
 	_, err = svc.GetCallerIdentity(context.Background(), &sts.GetCallerIdentityInput{})
 	if err != nil {
-		logError(err, profileName)
-		return
+		return err
 	}
-	logSuccess(profileName)
+	return nil
 }
 
 func skipCredentials(s *bufio.Scanner) {
@@ -111,11 +114,11 @@ func skipConfig(s *bufio.Scanner) {
 	s.Scan()
 }
 
-func DeleteCredentialByProfile(profileName string) {
+func DeleteCredentialByProfile(profileName, filePath string) error {
 	// not sure how to know the FileMode for this?
-	file, err := os.OpenFile("testdata/invalid-credentials.txt", os.O_RDWR, 0777)
+	file, err := os.OpenFile(filePath, os.O_RDWR, 0777)
 	if err != nil {
-		log.Fatalln("error reading credentials file")
+		return err
 	}
 	defer file.Close()
 
@@ -130,17 +133,18 @@ func DeleteCredentialByProfile(profileName string) {
 		newData = append(newData, append(scanner.Bytes(), "\n"...)...)
 	}
 
-	err = os.WriteFile("testdata/new-invalid-credentials.txt", newData, 0777)
+	err = os.WriteFile(filePath, newData, 0777)
 	if err != nil {
-		log.Println("error writing new credentials file")
+		return err
 	}
+	return nil
 }
 
-func DeleteConfigByProfile(profileName string) {
+func DeleteConfigByProfile(profileName, filePath string) error {
 	// not sure how to know the FileMode for this?
-	file, err := os.OpenFile("testdata/invalid-config.txt", os.O_RDWR, 0777)
+	file, err := os.OpenFile(filePath, os.O_RDWR, 0777)
 	if err != nil {
-		log.Fatalln("error reading config file")
+		return err
 	}
 	defer file.Close()
 
@@ -155,15 +159,21 @@ func DeleteConfigByProfile(profileName string) {
 		newData = append(newData, append(scanner.Bytes(), "\n"...)...)
 	}
 
-	err = os.WriteFile("testdata/new-invalid-config.txt", newData, 0777)
+	err = os.WriteFile(filePath, newData, 0777)
 	if err != nil {
-		log.Println("error writing new config file")
+		return err
 	}
+	return nil
 }
 
 func CheckCredentials(credentials []Credential) {
 	for _, cred := range credentials {
-		IsValidProfile(cred.ProfileName)
+		err := IsValidProfile(cred.ProfileName)
+		if err != nil {
+			logError(err, cred.ProfileName)
+			continue
+		}
+		logSuccess(cred.ProfileName)
 	}
 }
 
@@ -175,12 +185,32 @@ func ApplyProfile(profileName string) {
 	}
 }
 
-// What I initially tried
-func Apply(filePath string) {
-	cmd := exec.Command("source", filePath)
+func Clean(credentials []Credential) {
+	invalidProfiles := []string{}
+
+	for _, cred := range credentials {
+		err := IsValidProfile(cred.ProfileName)
+		if err != nil {
+			invalidProfiles = append(invalidProfiles, cred.ProfileName)
+		}
+	}
+
+	for _, profile := range invalidProfiles {
+		DeleteCredentialByProfile(profile, AWS_CREDENTIALS)
+		DeleteConfigByProfile(profile, AWS_CONFIG)
+	}
+}
+
+func Apply(profileName string, command []string) {
+	comm := command[0]
+	os.Setenv("AWS_PROFILE", profileName)
+	output := strings.Join([]string{"AWS_PROFILE", "=", os.ExpandEnv("$AWS_PROFILE")}, "")
+	cmd := exec.Command(comm, output)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
-		logError(err, filePath)
+		logError(err, profileName)
 	}
 }
 
