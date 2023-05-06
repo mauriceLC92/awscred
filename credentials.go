@@ -151,7 +151,7 @@ func DeleteConfigByProfile(profileName, filePath string) error {
 	scanner := bufio.NewScanner(file)
 	newData := []byte{}
 	for scanner.Scan() {
-		if scanner.Text() == fmt.Sprintf("[%s]", profileName) {
+		if scanner.Text() == fmt.Sprintf("[profile %s]", profileName) || scanner.Text() == fmt.Sprintf("[%s]", profileName) {
 			// skip the next two lines after finding the profile names
 			skipConfig(scanner)
 			continue
@@ -196,8 +196,9 @@ func Clean(credentials []Credential) {
 	}
 
 	for _, profile := range invalidProfiles {
-		DeleteCredentialByProfile(profile, AWS_CREDENTIALS)
-		DeleteConfigByProfile(profile, AWS_CONFIG)
+		// TODO - log the errors returned from these two functions and handle them
+		DeleteCredentialByProfile(profile, os.ExpandEnv(AWS_CREDENTIALS))
+		DeleteConfigByProfile(profile, os.ExpandEnv(AWS_CONFIG))
 	}
 }
 

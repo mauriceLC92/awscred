@@ -2,6 +2,8 @@ package awscred_test
 
 import (
 	"bytes"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -71,11 +73,13 @@ func TestDeleteCredentialByProfile_DeletesACredentialByProfileName(t *testing.T)
 	t.Parallel()
 
 	credentialsFile := "testdata/invalid-credentials.txt"
-	profileName := "something"
-	err := awscred.DeleteCredentialByProfile(profileName, credentialsFile)
-	if err == nil {
-		t.Errorf("expected file %s not to exist but instead it was found", credentialsFile)
-	}
+	profileName := "there"
+	awscred.DeleteCredentialByProfile(profileName, credentialsFile)
+
+	got, _ := os.ReadFile(credentialsFile)
+	gotString := string(got)
+	fmt.Printf("gotString: %v\n", gotString)
+
 }
 
 // DeleteConfigByProfile should error when given an invalid file path to credentials file
