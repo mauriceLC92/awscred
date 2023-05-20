@@ -22,8 +22,7 @@ func main() {
 			awscred.CheckCredentials(creds)
 		case "apply":
 			profileName := os.Args[2]
-			commandName := os.Args[3:]
-			awscred.Apply(profileName, commandName)
+			awscred.Apply(profileName)
 		case "clean":
 			creds := getCreds()
 			awscred.Clean(creds)

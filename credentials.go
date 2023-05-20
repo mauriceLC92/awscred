@@ -6,11 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -118,6 +115,7 @@ func DeleteCredentialByProfile(profileName, filePath string) error {
 	// not sure how to know the FileMode for this?
 	file, err := os.OpenFile(filePath, os.O_RDWR, 0777)
 	if err != nil {
+		fmt.Printf("err: %v\n", err)
 		return err
 	}
 	defer file.Close()
@@ -197,54 +195,35 @@ func Clean(credentials []Credential) {
 
 	for _, profile := range invalidProfiles {
 		// TODO - log the errors returned from these two functions and handle them
-		DeleteCredentialByProfile(profile, os.ExpandEnv(AWS_CREDENTIALS))
-		DeleteConfigByProfile(profile, os.ExpandEnv(AWS_CONFIG))
+		err := DeleteCredentialByProfile(profile, "somethfefheeufeennfing-random.txt")
+		fmt.Printf("err DeleteCredentialByProfile: %v\n", err)
+		err = DeleteConfigByProfile(profile, "somethfefheeufeennfing-random.txt")
+		fmt.Printf("err DeleteConfigByProfile: %v\n", err)
 	}
 }
 
-func Apply(profileName string, command []string) {
-	comm := command[0]
+func Apply(profileName string) {
 	os.Setenv("AWS_PROFILE", profileName)
-	output := strings.Join([]string{"AWS_PROFILE", "=", os.ExpandEnv("$AWS_PROFILE")}, "")
-	cmd := exec.Command(comm, output)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		logError(err, profileName)
+	os.Setenv("SLS_INTERACTIVE_SETUP_ENABLE", "1")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		os.Setenv("AWS_PROFILE", profileName)
+		// my use-case for running `sls` (serverless cli) commands
+		os.Setenv("SLS_INTERACTIVE_SETUP_ENABLE", "1")
+		userInput := scanner.Text()
+
+		shellCommand := "sh"
+		commandToRun := []string{"-c", userInput}
+
+		command := exec.Command(shellCommand, commandToRun[0:]...)
+		command.Stdout = os.Stdout
+		command.Stdin = os.Stdin
+		err := command.Run()
+		if err != nil {
+			fmt.Printf("error running the command %s \n: %v", commandToRun[1], err)
+		}
 	}
-}
-
-// This won't work either since this function will run within a child process
-func ApplyIt(filePath string) {
-	cmd := exec.Command("/bin/bash", "-c", fmt.Sprintf("source %s", filePath))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		logError(err, filePath)
-	}
-}
-
-// A Go program is unable to update the environment variable of the shell that invoked it. The Go program
-// is run in a child process of the shell. Child process cannot modify the environment of it's parent.
-// The below generates a script which can then be sourced by the user running that within the shell.
-
-func GenerateProfileScript(profileName string) {
-	script := fmt.Sprintf(`#!/bin/bash
-	export AWS_PROFILE=%s
-	`, profileName)
-
-	scriptFilePath := filepath.Join(os.TempDir(), "set_aws_profile.sh")
-	err := ioutil.WriteFile(scriptFilePath, []byte(script), 0755)
-	if err != nil {
-		log.Fatal("Error writing script file:", err)
-	}
-
-	fmt.Printf("Script created: %s\n", scriptFilePath)
-	fmt.Println("To update the environment variable, run:")
-	fmt.Printf("source %s\n", scriptFilePath)
-	ApplyIt(scriptFilePath)
 }
 
 func logSuccess(profileName string) {
