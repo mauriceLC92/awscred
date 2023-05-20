@@ -194,10 +194,9 @@ func Clean(credentials []Credential) {
 	}
 
 	for _, profile := range invalidProfiles {
-		// TODO - log the errors returned from these two functions and handle them
-		err := DeleteCredentialByProfile(profile, "somethfefheeufeennfing-random.txt")
+		err := DeleteCredentialByProfile(profile, os.ExpandEnv(AWS_CREDENTIALS))
 		fmt.Printf("err DeleteCredentialByProfile: %v\n", err)
-		err = DeleteConfigByProfile(profile, "somethfefheeufeennfing-random.txt")
+		err = DeleteConfigByProfile(profile, os.ExpandEnv(AWS_CONFIG))
 		fmt.Printf("err DeleteConfigByProfile: %v\n", err)
 	}
 }
