@@ -112,7 +112,6 @@ func skipConfig(s *bufio.Scanner) {
 }
 
 func DeleteCredentialByProfile(profileName, filePath string) error {
-	// not sure how to know the FileMode for this?
 	file, err := os.OpenFile(filePath, os.O_RDWR, 0777)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
@@ -139,7 +138,6 @@ func DeleteCredentialByProfile(profileName, filePath string) error {
 }
 
 func DeleteConfigByProfile(profileName, filePath string) error {
-	// not sure how to know the FileMode for this?
 	file, err := os.OpenFile(filePath, os.O_RDWR, 0777)
 	if err != nil {
 		return err
@@ -175,14 +173,6 @@ func CheckCredentials(credentials []Credential) {
 	}
 }
 
-func ApplyProfile(profileName string) {
-	cmd := exec.Command("export", fmt.Sprintf("AWS_PROFILE=%s", profileName))
-	err := cmd.Run()
-	if err != nil {
-		logError(err, profileName)
-	}
-}
-
 func Clean(credentials []Credential) {
 	invalidProfiles := []string{}
 
@@ -195,21 +185,23 @@ func Clean(credentials []Credential) {
 
 	for _, profile := range invalidProfiles {
 		err := DeleteCredentialByProfile(profile, os.ExpandEnv(AWS_CREDENTIALS))
-		fmt.Printf("err DeleteCredentialByProfile: %v\n", err)
+		if err != nil {
+			fmt.Printf("err DeleteCredentialByProfile: %v\n", err)
+		}
 		err = DeleteConfigByProfile(profile, os.ExpandEnv(AWS_CONFIG))
-		fmt.Printf("err DeleteConfigByProfile: %v\n", err)
+		if err != nil {
+			fmt.Printf("err DeleteConfigByProfile: %v\n", err)
+		}
 	}
 }
 
 func Apply(profileName string) {
 	os.Setenv("AWS_PROFILE", profileName)
+	// Be able to run `sls` (serverless cli) commands
 	os.Setenv("SLS_INTERACTIVE_SETUP_ENABLE", "1")
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		os.Setenv("AWS_PROFILE", profileName)
-		// my use-case for running `sls` (serverless cli) commands
-		os.Setenv("SLS_INTERACTIVE_SETUP_ENABLE", "1")
 		userInput := scanner.Text()
 
 		shellCommand := "sh"
