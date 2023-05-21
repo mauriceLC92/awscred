@@ -18,6 +18,12 @@ import (
 const (
 	AWS_CREDENTIALS = "$HOME/.aws/credentials"
 	AWS_CONFIG      = "$HOME/.aws/config"
+
+	HELP_PRINT = "print - Display all the credentials found in '.aws/credentials`."
+	HELP_CHECK = "check - Checks and displays if the credentials found in '.aws/credentials` are valid or not."
+	HELP_CLEAN = "clean - Removes any invalid credentials found from both '.aws/credentials` and '.aws/config`."
+	HELP_APPLY = "apply - Creates a shell with the given AWS profile exported so that any commands given run within the context of the desired profile."
+	HELP_HELP  = "help - Display a menu of the commands available and their descriptions. \n"
 )
 
 type Credential struct {
@@ -35,6 +41,14 @@ func PrintTo(w io.Writer, credentials []Credential) {
 		fmt.Fprint(w, cred.String())
 		fmt.Println("--------------------------------------------------------------")
 	}
+}
+
+func GenerateHelpMenu() string {
+	return strings.Join([]string{HELP_PRINT, HELP_CHECK, HELP_CLEAN, HELP_HELP}, "\n")
+}
+
+func PrintHelpTo(w io.Writer, s string) {
+	fmt.Fprint(w, s)
 }
 
 func Parse(filePath string) ([]Credential, error) {

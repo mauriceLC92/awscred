@@ -27,7 +27,7 @@ func main() {
 			creds := getCreds()
 			awscred.Clean(creds)
 		case "help":
-			log.Println("Displays a friendly message of the options available.")
+			awscred.PrintHelpTo(os.Stdout, awscred.GenerateHelpMenu())
 		default:
 			fmt.Println("Command not recognised. Please use 'help' to see the commands available to you.")
 		}
