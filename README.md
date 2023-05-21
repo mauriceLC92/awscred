@@ -20,10 +20,9 @@ go install github.com/mauriceLC92/awscred
 ## Usage
 
 ```sh
-awscred check
+awscred print
 ```
-
-TODO - more usage steps here
+![](https://drive.google.com/file/d/1wN4jnYLMplJT6ftiYI1g4paVod3_PKmC/view?usp=sharing)
 
 
 # License
