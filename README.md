@@ -22,8 +22,22 @@ go install github.com/mauriceLC92/awscred
 ```sh
 awscred print
 ```
-![](https://drive.google.com/file/d/1wN4jnYLMplJT6ftiYI1g4paVod3_PKmC/view?usp=sharing)
+![print](https://drive.google.com/uc?export=view&id=1wN4jnYLMplJT6ftiYI1g4paVod3_PKmC)
 
+```sh
+awscred check
+```
+![check](https://drive.google.com/uc?export=view&id=1zCOWEY5RPJLKWP_Id_gtIR0Q5DhpJeYf)
+
+```sh
+awscred apply workshop-admin
+```
+![apply](https://drive.google.com/uc?export=view&id=1PZnsBh-3hSiLaVyWWgAhyB5eYSVe913o)
+
+```sh
+awscred help
+```
+![help](https://drive.google.com/uc?export=view&id=1UmBDAT13hC1r20okrRVtTWbgCExkPPY5)
 
 # License
 
