@@ -14,7 +14,7 @@ Easily apply and run a command within the context of the desired profile.
 # Installation
 
 ```sh
-go install github.com/mauriceLC92/awscred@latest
+go install github.com/mauriceLC92/awscred/cmd/awscred
 ```
 
 ## Usage
